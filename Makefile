@@ -7,3 +7,4 @@ clean :
 	        rm drbdstats drbdstats.o
 install : drbdstats
 	install -m 6755 drbdstats /usr/bin/
+	install -m 755 php/drbdinfo.inc /var/www/html/

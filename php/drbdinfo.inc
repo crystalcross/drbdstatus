@@ -134,7 +134,7 @@ function drbd_get_info()
 				}
 			}
 			foreach($pt as $p1 => $p2)
-				$res[$pt['res']]['connection'][$pt['conn']][$p1]=$p2;
+				$res[$pt['res']]['connection'][$pt['conn']]['debug'][$p1]=$p2;
 		}
 	}
 	return ($res);
