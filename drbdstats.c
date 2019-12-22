@@ -5,7 +5,7 @@
 #include <ctype.h>
 #include <glob.h>
 
-char * dircomp(char * find,char * pth, int part,char dlm)
+char * splitit(char * find,char * pth, int part,char dlm)
 {
 	char * loc;
 	int cnt,fnd;
@@ -87,7 +87,7 @@ void parsedrbd(char * bf,char dlm)
 			loc++;
 		}
 	}
-	dircomp(tmp,parts[0][0],0,':');
+	splitit(tmp,parts[0][0],0,':');
 	printf("resnum:%s%c",tmp,dlm);
 	printf("protocol:%s%c",parts[0][4],dlm);
 	printf("flags:%s%c",parts[0][5],dlm);
@@ -102,15 +102,15 @@ void parsedrbd(char * bf,char dlm)
 		printf("syncing:%s%c","yes",dlm);
 		printf("progress:%s%c",parts[2][0],dlm);
 		printf("synced:%s%c",parts[2][2],dlm);
-		dircomp(tmp,parts[2][3],0,'/');
+		splitit(tmp,parts[2][3],0,'/');
 		printf("left:%s%s%c",tmp,parts[2][4],dlm);
-		dircomp(tmp,parts[2][3],1,'/');
+		splitit(tmp,parts[2][3],1,'/');
 		printf("total:%s%s%c",tmp,parts[2][4],dlm);
-		dircomp(tmp,parts[3][1],0,':');
+		splitit(tmp,parts[3][1],0,':');
 		tt=atol(tmp)*3600;
-		dircomp(tmp,parts[3][1],1,':');
+		splitit(tmp,parts[3][1],1,':');
 		tt=tt+(atol(tmp)*60);
-		dircomp(tmp,parts[3][1],2,':');
+		splitit(tmp,parts[3][1],2,':');
 		tt=tt+atol(tmp);
 		int w=7;
 		if (strcmp(parts[3][7],"want:")==0)
@@ -125,9 +125,9 @@ void parsedrbd(char * bf,char dlm)
 		printf("ssmin:%s %s%c",parts[3][4],parts[3][w],dlm);
 		printf("ssmax:%s %s%c",parts[3][6],parts[3][w],dlm);
 		printf("sposperc:%s%c",parts[4][0],dlm);
-		dircomp(tmp,parts[4][3],0,'/');
+		splitit(tmp,parts[4][3],0,'/');
 		printf("sposc:%s%c",tmp,dlm);
-		dircomp(tmp,parts[4][3],1,'/');
+		splitit(tmp,parts[4][3],1,'/');
 		printf("spost:%s%c",tmp,dlm);
 	}
 	else
@@ -145,25 +145,25 @@ void parsedrbd(char * bf,char dlm)
 		printf("sposc:0%c",dlm);
 		printf("spost:0%c",dlm);
 	}
-	dircomp(tmp,parts[adtl][1],0,'/');
+	splitit(tmp,parts[adtl][1],0,'/');
 	printf("re-%s%c",tmp,dlm);
-	dircomp(tmp,parts[adtl][1],1,'/');
+	splitit(tmp,parts[adtl][1],1,'/');
 	printf("re-total:%s%c",tmp,dlm);
 	for(int j=2;parts[adtl][j][0]!=0;j++)
 		printf("re-%s%c",parts[adtl][j],dlm);
 	adtl++;
-	dircomp(tmp,parts[adtl][1],0,'/');
+	splitit(tmp,parts[adtl][1],0,'/');
 	printf("al-%s%c",tmp,dlm);
-	dircomp(tmp,parts[adtl][1],1,'/');
+	splitit(tmp,parts[adtl][1],1,'/');
 	printf("al-total:%s%c",tmp,dlm);
 	for(int j=2;parts[adtl][j][0]!=0;j++)
 		printf("al-%s%c",parts[adtl][j],dlm);
 	adtl++;
-	dircomp(tmp,parts[adtl][4],0,'/');
+	splitit(tmp,parts[adtl][4],0,'/');
 	printf("boal1:%s%c",tmp,dlm);
-	dircomp(tmp,parts[adtl][4],1,'/');
+	splitit(tmp,parts[adtl][4],1,'/');
 	printf("boal2:%s%c",tmp,dlm);
-	dircomp(tmp,parts[adtl][4],2,'/');
+	splitit(tmp,parts[adtl][4],2,'/');
 	printf("boal3:%s%c",tmp,dlm);
 	printf("\n");
 	//printf("%s\n%s\nlines=%d\n",parts[0][0],bf,line);
@@ -238,8 +238,8 @@ int main(int argc, char *argv[] )
        	{
 		for (i=0;  i <globbuf.gl_pathc; i++)
 		{ 
-			dircomp(fndhost,globbuf.gl_pathv[i],6,'/');
-			dircomp(fndconn,globbuf.gl_pathv[i],8,'/');
+			splitit(fndhost,globbuf.gl_pathv[i],6,'/');
+			splitit(fndconn,globbuf.gl_pathv[i],8,'/');
 			printf("res:%s",fndhost);
 			printf("%c",delim);
 			printf("conn:%s",fndconn);
