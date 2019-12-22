@@ -4,7 +4,7 @@
 
 This array can easily be converted into a ***JSON*** file for use with a javascript library.  This script is intended to be included in your php program and called with no arguments.
 
-...
+```
 <?php
 	
 	include "drbdinfo.inc";
@@ -14,4 +14,4 @@ This array can easily be converted into a ***JSON*** file for use with a javascr
 	print_r($data);
 
 ?>
-...
+```
