@@ -1,8 +1,10 @@
-drbdstats : drbdstats.o
-	        cc -o drbdstats drbdstats.o
+drbdstats : drbdstats.o drbdgetstat.o
+	        cc -o drbdstats drbdstats.o drbdgetstat.o
 
 drbdstats.o : drbdstats.c
 	        cc -c drbdstats.c
+drbdgetstat.o : drbdgetstat.c
+	        cc -c drbdgetstat.c
 clean :
 	        rm drbdstats drbdstats.o
 install : drbdstats
