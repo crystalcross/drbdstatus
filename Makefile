@@ -5,10 +5,10 @@ DEPS=
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-drbdstats: drbdstats.o drbdgetstat.o libutils.o
+drbdstats: drbdstats.o drbdgetstat.o libutils.o libll.o drbddigeststats.o
 	$(CC) -o $@ $^ $(CFLAGS)
 
-testproc : test.o libutils.o libll.o
+testproc : test.o drbdgetstat.o drbddigeststats.o libutils.o libll.o
 	$(CC) -o $@ $^ $(CFLAGS)
 clean :
 	        rm -f drbdstats testproc *.o

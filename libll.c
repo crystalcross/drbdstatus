@@ -5,7 +5,7 @@
 #include "libll.h"
 #include "libutils.h"
 
-node list_add(node nn,char * name,void * data,size_t size,char kind)
+node list_add(node * nn,char * name,void * data,size_t size,char kind)
 {
 	node temp;
 	node top;
@@ -15,15 +15,15 @@ node list_add(node nn,char * name,void * data,size_t size,char kind)
 	int i;
 	temp=list_find(nn,name);
 	if (temp!=NULL)
-		nn=list_delete(temp);
-	top=nn;
+		*nn=list_delete(&temp);
+	top=*nn;
 	strcpy(nam,name);
-	if (top==NULL)
+	if (*nn==NULL)
 	{
-		top=(node)malloc(sizeof(struct LinkedList));
-		top->next = NULL;
-		top->prev = NULL;
-		temp=top;
+		*nn=(node)malloc(sizeof(struct LinkedList));
+		(**nn).next = NULL;
+		(**nn).prev = NULL;
+		temp=*nn;
 		if (nam[0]==0)
 		{
 			strcpy(nam,"#0");
@@ -34,8 +34,8 @@ node list_add(node nn,char * name,void * data,size_t size,char kind)
 		top=list_first(nn);
 		if (nam[0]==0)
 		{
-			i=list_count(top);
-			list_renumber(top);
+			i=list_count(&top);
+			list_renumber(&top);
 			strcpy(nam,"#");
 			sprintf(tmp,"%d",i);
 			strcat(nam,tmp);
@@ -59,10 +59,34 @@ node list_add(node nn,char * name,void * data,size_t size,char kind)
 		memcpy(temp->data,data,size);
 	}
 	strcpy(temp->name,nam);
-	return(top);
+	return(temp);
 }
 
-node list_find(node nn,char * name)
+node list_array(node * nn,char * name,bool crt)
+{
+	node temp;
+
+	if (*nn==NULL)
+	{
+		if(!crt) return(NULL);
+		temp=list_add(nn,name,NULL,0,'a');
+		return(temp);
+	}
+	temp=list_find(nn,name);
+	if (temp!=NULL)
+	{
+		if (temp->kind=='a')
+			return(temp);
+		if (!crt) return(NULL);
+		temp=list_delete(&temp);
+		temp=list_add(&temp,name,NULL,0,'a');
+		return(temp);
+	}
+	if (crt) temp=list_add(nn,name,NULL,0,'a');
+	return(temp);
+}
+
+node list_find(node * nn,char * name)
 {
 	node top;
 
@@ -77,7 +101,7 @@ node list_find(node nn,char * name)
 	return(NULL);
 }
 
-void list_renumber(node nn)
+void list_renumber(node * nn)
 {
 	node temp;
 	int i;
@@ -100,70 +124,77 @@ void list_renumber(node nn)
 	}
 }
 
-void list_rename(node nn,char * name)
+void list_rename(node * nn,char * name)
 {
-	if (nn==NULL) return;
+	node temp;
+
+	if (*nn==NULL) return;
+	temp=*nn;
 	if (name[0]==0)
-		strcpy(nn->name,"#0");
+		strcpy(temp->name,"#0");
 	else
-	    	strcpy(nn->name,name);
+	    	strcpy(temp->name,name);
 	list_renumber(nn);
 }
 
-void list_name(node nn,char * name)
+void list_name(node * nn,char * name)
 {
-	if (nn!=NULL) 
-		strcpy(name,nn->name);
+	node temp;
+	temp=*nn;
+	if (temp!=NULL) 
+		strcpy(name,temp->name);
 	else
 		name[0]=0;
 }
 
-node list_delete(node nn)
+node list_delete(node * nn)
 {
 	node temp;
+	node top;
 
-	if (nn==NULL)
+	top=*nn;
+	if (top==NULL)
 		return(NULL);
 	else
 	{
-		if (nn->data != NULL)
+		if (top->data != NULL)
 		{
-			if (nn->kind=='a')
-				nn->data=list_clear(nn->data);
+			if (top->kind=='a')
+				top->data=list_clear((node *)&(top->data));
 			else
-				free(nn->data);
+				free(top->data);
 		}
-		if (nn->prev != NULL)
+		if (top->prev != NULL)
 		{
-			nn->prev->next=nn->next;
-			temp=nn->prev;
+			top->prev->next=top->next;
+			temp=top->prev;
 		}
 		else
-			temp=nn->next;
-		if (nn->next != NULL)
-			nn->next->prev=nn->prev;
-		free(nn);
-		nn=temp;
+			temp=top->next;
+		if (top->next != NULL)
+			top->next->prev=top->prev;
+		free(top);
+		*nn=temp;
 		list_renumber(nn);
-		return(nn);
+		return(*nn);
 	}
 }
 
-node list_clear(node nn)
+node list_clear(node * nn)
 {
 	node temp;
 
-	if (nn==NULL)
+	if (*nn==NULL)
 		return(NULL);
 	temp=list_last(nn);
 	while(temp!=NULL)
 	{
-		temp=list_delete(temp);
+		temp=list_delete(&temp);
 	}
 	return(temp);
 }
 
-int list_count(node nn)
+int list_count(node * nn)
 {
 	node temp;
 	int i;
@@ -180,20 +211,20 @@ int list_count(node nn)
 	return(i);
 }
 
-node list_first(node nn)
+node list_first(node * nn)
 {
 	node top;
 
-	if (nn==NULL)
+	if (*nn==NULL)
 		return(NULL);
 	else
 	{
-		for(top=nn;top->prev!=NULL;top=top->prev);
+		for(top=*nn;top->prev!=NULL;top=top->prev);
 		return(top);
 	}
 }
 
-node list_last(node nn)
+node list_last(node * nn)
 {
 	node temp;
 
@@ -201,33 +232,53 @@ node list_last(node nn)
 		return(NULL);
 	else
 	{
-		for(temp=nn;temp->next!=NULL;temp=temp->next);
+		for(temp=*nn;temp->next!=NULL;temp=temp->next);
 		return(temp);
 	}
 }
 
-void list_dump(node nn,char * obuff)
+void list_dump(node * nn,char * obuff,int indent)
 {
 	node temp;
+	char del[50];
+	int dnext=-1;
+	char fdelim='\n';
+	char adelim='\n';
 
-	if (nn==NULL) return;
+	memset(del,'\t',49);
+	if (indent>=0)
+	       	del[indent]=0;
+	else
+	{
+		del[0]=0;
+		fdelim=',';
+		adelim=' ';
+	}
+	if (indent>=0) dnext=indent+1;
+
+	if (*nn==NULL) return;
 	temp=list_first(nn);
-	catf(obuff,"%c\n",'{');
+	catf(obuff,"%c%c",'{',adelim);
 	while (temp!=NULL)
 	{
+		catf(obuff,"%s",del);
 		catf(obuff,"%s:",temp->name);
 		switch (temp->kind)
 		{
 			case 's':
-				catf(obuff,"\"%s\"\n",(char *)temp->data);
+				catf(obuff,"\"%s\"",(char *)temp->data);
+				if (fdelim!=',') catf(obuff,"%c",fdelim);
 				break;
 			case 'a':
-				list_dump((node)temp->data,obuff);
+				list_dump((node *)&temp->data,obuff,dnext);
 				break;
 		}
 		temp=temp->next;
+		if ((temp!=NULL)&&(fdelim==',')) catf(obuff,"%c",fdelim);
 	}
-	catf(obuff,"%c\n",'}');
+	if (indent>0) del[indent-1]=0;
+	catf(obuff,"%s",del);
+	catf(obuff,"%c%c",'}',adelim);
 }
 
 

@@ -5,7 +5,9 @@
 #include <ctype.h>
 #include <glob.h>
 #include <stdarg.h>
+#include <stdbool.h>
 #include "drbdgetstat.h"
+#include "drbddigeststats.h"
 
 int main(int argc, char *argv[] )
 {
@@ -19,12 +21,15 @@ int main(int argc, char *argv[] )
 	char delim = ';';
 	char *cvalue = NULL;
 	char *obuff;
+	bool newform=false;
+	int json=1;
 	int c;
 	opterr = 0;
 	char host[50];
 	char connection[50];
 	int i=0;
 	glob_t globbuf;
+	node arry=NULL;
 
 	strcpy(host,"");
 	strcpy(connection,"*");
@@ -33,7 +38,7 @@ int main(int argc, char *argv[] )
 	obuff[0]=0;
 
 
-  	while ((c = getopt (argc, argv, "tnd:Ar:c:")) != -1)
+  	while ((c = getopt (argc, argv, "ajtnd:Ar:c:")) != -1)
 	switch (c)
 	{
 		case 'd':
@@ -45,6 +50,13 @@ int main(int argc, char *argv[] )
 		case 'n':
 			delim='\n';
 			break;
+		case 'a':
+			newform=true;
+			json=1;
+			break;
+		case 'j':
+			newform=true;
+			json=-1;
 		case 'A':
 			strcpy(host,"*");
 			strcpy(connection,"*");
@@ -70,15 +82,29 @@ int main(int argc, char *argv[] )
 	for(int s=0;connection[s]!=0;s++) if ((connection[s]=='/')||(connection[s]=='\\')) connection[s]='-';	
 	for(int s=0;host[s]!=0;s++) if ((host[s]=='/')||(host[s]=='\\')) host[s]='-';	
 
-	if (drbd_get_stats(obuff,delim,host,connection)>=0)
+	if (newform)
 	{
-		printf("%s\n",obuff);
-		return(0);
+		if (drbd_digest_stats(&arry,host,connection)>=0)
+		{
+			list_dump(&arry,obuff,json);
+			printf("%s\n",obuff);
+		}
+		else
+			fprintf(stderr,"Error retreiving list.\n");		
 	}
 	else
 	{
-		fprintf(stderr,"Error retreiving list.\n");
-		return(-1);
+		if (drbd_get_stats(obuff,delim,host,connection)>=0)
+		{
+			printf("%s\n",obuff);
+			return(0);
+		}
+		else
+		{
+			fprintf(stderr,"Error retreiving list.\n");
+			return(-1);
+		}
 	}
 
 }
+

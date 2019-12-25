@@ -54,7 +54,7 @@ char * splitit(char * find,char * pth, int part,char dlm)
 {
 	char * loc;
 	int cnt,fnd;
-	char found[100];
+	char found[2048];
 
 	loc=pth;
 	fnd=0;
