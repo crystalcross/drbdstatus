@@ -1,12 +1,17 @@
-drbdstats : drbdstats.o drbdgetstat.o
-	        cc -o drbdstats drbdstats.o drbdgetstat.o
+CC=cc
+CFLAGS=-g
+DEPS=
 
-drbdstats.o : drbdstats.c
-	        cc -c drbdstats.c
-drbdgetstat.o : drbdgetstat.c
-	        cc -c drbdgetstat.c
+%.o: %.c $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS)
+
+drbdstats: drbdstats.o drbdgetstat.o libutils.o
+	$(CC) -o $@ $^ $(CFLAGS)
+
+testproc : test.o libutils.o libll.o
+	$(CC) -o $@ $^ $(CFLAGS)
 clean :
-	        rm drbdstats drbdstats.o
+	        rm -f drbdstats testproc *.o
 install : drbdstats
 	install -m 6755 drbdstats /usr/bin/
 	install -m 755 php/drbdinfo.inc /var/www/html/

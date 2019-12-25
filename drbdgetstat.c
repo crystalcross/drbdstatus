@@ -5,43 +5,7 @@
 #include <ctype.h>
 #include <glob.h>
 #include <stdarg.h>
-
-void catf( char * obuff, const char* format, ... ) 
-{
-	va_list args;
-	char bf[2048];
-	va_start( args, format );
-	vsprintf(bf,format,args );
-	strcat(obuff,bf);
-	va_end( args );
-}
-
-char * splitit(char * find,char * pth, int part,char dlm)
-{
-	char * loc;
-	int cnt,fnd;
-	char found[100];
-
-	loc=pth;
-	fnd=0;
-	found[0]=0;
-	cnt=0;
-	while((loc[0] != 0)&&(cnt<=part))
-	{
-		if (cnt==part)
-		{
-			if (loc[0]!=dlm)
-			{
-				found[fnd++]=loc[0];
-				found[fnd]=0;
-			}
-		}
-		if (loc[0]==dlm) cnt++;
-		loc++;
-	}
-	strcpy(find,found);
-	return(find);
-}
+#include "libutils.h"
 
 void parsedrbd(char * obuff,char * bf,char dlm)
 {
