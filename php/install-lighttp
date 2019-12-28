@@ -1,12 +1,17 @@
 #!/bin/bash
 #############################
 apt update
-apt install lighttpd
+apt -y install lighttpd
 systemctl stop lighttp.service
 systemctl stop lighttpd.service
 systemctl start lighttpd.service
 systemctl enable lighttpd.service
-apt-get install php-cgi php-mcrypt php-cli php-mysql php-gd php-imagick php-recode php-tidy php-xmlrpc
-apt install libterm-readline-gnu-perl
+apt-get -y install php-cgi php-mcrypt php-cli php-mysql php-gd php-imagick php-recode php-tidy php-xmlrpc
+apt-get -y  install libterm-readline-gnu-perl
 lighttpd-enable-mod fastcgi 
 lighttpd-enable-mod fastcgi-php
+sed -i '/^file_uploads.*/c\file_uploads = On' /etc/php/*/cgi/php.ini
+sed -i '/^arrow_url_fopen.*/c\allow_url_fopen = On' /etc/php/*/cgi/php.ini
+sed -i '/^memory_limit.*/c\memory_limit = 256M' /etc/php/*/cgi/php.ini
+sed -i '/^upload_max_filesize.*/c\upload_max_filesize = 64M' /etc/php/*/cgi/php.ini
+systemctl restart lighttpd.service
