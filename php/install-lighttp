@@ -1,7 +1,7 @@
 #!/bin/bash
 #############################
 apt update
-apt install lighttp
+apt install lighttpd
 systemctl stop lighttp.service
 systemctl stop lighttpd.service
 systemctl start lighttpd.service
