@@ -1,0 +1,12 @@
+#!/bin/bash
+#############################
+apt update
+apt install lighttp
+systemctl stop lighttp.service
+systemctl stop lighttpd.service
+systemctl start lighttpd.service
+systemctl enable lighttpd.service
+apt-get install php-cgi php-mcrypt php-cli php-mysql php-gd php-imagick php-recode php-tidy php-xmlrpc
+apt install libterm-readline-gnu-perl
+lighttpd-enable-mod fastcgi 
+lighttpd-enable-mod fastcgi-php
